@@ -10,9 +10,10 @@ import sys
 
 diff = 25
 
-if __name__ == '__main__':
-    # grab fullscreen
+first_screen_res = [1920, 1080]
+second_screen_res = [1360, 768]
 
+if __name__ == '__main__':
     width = 64
     height = 64
     key_color = None
@@ -25,12 +26,15 @@ if __name__ == '__main__':
         im = ImageGrab.grab()
         # TODO support custom resolutions for primary and second screen
         if len(sys.argv) > 1:
-            if sys.argv[1] == 'lg':
-                cropped = im.crop((1920, 0+500, 1920+1300, 720+300))
+            if sys.argv[1] == 'second':
+                cropped = im.crop((first_screen_res[0],
+                                   first_screen_res[1] - second_screen_res[1],
+                                   first_screen_res[0] + second_screen_res[0],
+                                   first_screen_res[1]))
             else:
-                cropped = im.crop((0, 0, 1920, 1080))
+                cropped = im.crop((0, 0, first_screen_res[0], first_screen_res[1]))
         else:
-            cropped = im.crop((im.size[0] / 3 - 200, im.size[1] / 2 - 200, im.size[0] / 3, im.size[1]))
+            cropped = im.crop((0, 0, first_screen_res[0], first_screen_res[1]))
 
         resized_img = cropped.resize((width, height), Image.BILINEAR)
 
@@ -41,7 +45,7 @@ if __name__ == '__main__':
         try:
             color_thief = ColorThief(output)
             # get the dominant color
-            dominant_color = color_thief.get_color(quality=8)
+            dominant_color = color_thief.get_color(quality=10)
         except Exception:
             print "exception"
 
