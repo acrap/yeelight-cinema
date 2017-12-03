@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     bulb = Bulb("192.168.1.247", effect="smooth")
     bulb.start_music(2000)
-
+    output = io.BytesIO()
     while True:
 
         im = ImageGrab.grab()
@@ -33,13 +33,17 @@ if __name__ == '__main__':
             cropped = im.crop((im.size[0] / 3 - 200, im.size[1] / 2 - 200, im.size[0] / 3, im.size[1]))
 
         resized_img = cropped.resize((width, height), Image.BILINEAR)
-        output = io.BytesIO()
-        blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
-        blurred_image.save(output, format='PNG')
-        color_thief = ColorThief(output)
 
-        # get the dominant color
-        dominant_color = color_thief.get_color(quality=1)
+        blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
+        output.flush()
+        output.seek(0,0)
+        blurred_image.save(output, format='PNG')
+        try:
+            color_thief = ColorThief(output)
+            # get the dominant color
+            dominant_color = color_thief.get_color(quality=8)
+        except Exception:
+            print "exception"
 
         if key_color is None:
             key_color = dominant_color
@@ -51,6 +55,7 @@ if __name__ == '__main__':
             else:
                 key_color = dominant_color
         bulb.set_rgb(dominant_color[0], dominant_color[1], dominant_color[2])
+
 
 
 
