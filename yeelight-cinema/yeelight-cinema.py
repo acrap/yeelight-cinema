@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import pyscreenshot as ImageGrab
+import pyscreenshot as image_grab
 from colorthief import ColorThief
 from yeelight import Bulb
 import io
@@ -11,8 +11,12 @@ import argparse
 
 
 def string_to_resolution_list(resolution_str):
-    width = int(resolution_str[:resolution_str.index('x')])
-    heihgt = int(resolution_str[resolution_str.index('x')+1:])
+    try:
+        width = int(resolution_str[:resolution_str.index('x')])
+        heihgt = int(resolution_str[resolution_str.index('x')+1:])
+    except:
+        print "invalid resolution '{0}'. Use WIDTHxHEIGHT format (for example 1920x1080)".format(resolution_str)
+        sys.exit(-1)
     res_list = [width, heihgt]
     return res_list
 
@@ -42,7 +46,7 @@ if __name__ == '__main__':
     output = io.BytesIO()
     while True:
 
-        im = ImageGrab.grab()
+        im = image_grab.grab()
         if len(sys.argv) > 1:
             if args.screen == 'right':
                 cropped = im.crop((first_screen_res[0],
