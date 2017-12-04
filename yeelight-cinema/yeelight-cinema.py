@@ -2,9 +2,7 @@
 
 import pyscreenshot as image_grab
 from yeelight import Bulb
-import io
 from PIL import Image
-from PIL import ImageFilter
 import sys
 import argparse
 
@@ -21,8 +19,8 @@ def string_to_resolution_list(resolution_str):
 
 
 if __name__ == '__main__':
-    width = 64
-    height = 64
+    width = 32*16
+    height = 32*9
 
     parser = argparse.ArgumentParser(description="yeelight color bulb cinema mode script")
 
@@ -41,11 +39,7 @@ if __name__ == '__main__':
     key_color = None
 
     bulb = Bulb(args.bulb_ip, effect="smooth")
-    try:
-        bulb.start_music(2000)
-    except:
-        pass
-
+    bulb.start_music(2000)
     bbox = (0, 0, first_screen_res[0], first_screen_res[1])
 
     if args.screen.startswith("right"):
@@ -56,10 +50,10 @@ if __name__ == '__main__':
     while True:
         im = image_grab.grab(bbox=bbox)
         resized_img = im.resize((width, height), Image.BILINEAR)
-        blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
+
         try:
             resize = 150
-            result = blurred_image.convert('P', palette=Image.ADAPTIVE, colors=1)
+            result = resized_img.convert('P', palette=Image.ADAPTIVE, colors=1)
             result.putalpha(0)
             colors = result.getcolors(resize * resize)
             dominant_color = colors[0][1][:3]
@@ -75,7 +69,10 @@ if __name__ == '__main__':
                 continue
             else:
                 key_color = dominant_color
-        bulb.set_rgb(dominant_color[0], dominant_color[1], dominant_color[2])
+        try:
+            bulb.set_rgb(dominant_color[0], dominant_color[1], dominant_color[2])
+        except:
+            pass
 
 
 
