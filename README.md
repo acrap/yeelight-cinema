@@ -6,6 +6,10 @@ Script detects color of scene and changes bulb color.
 Enable direction by local network in Yeelight application (Android/iOs)
 Run script without arguments and it will calculates dominant color on screen and changes bulb color.
 
+# Installation 
+
+    pip install yeelight-cinema
+
 # Usage:
     yeelight-cinema.py --bulb_ip=192.168.1.240 --resolution_l=1920x1080
 
