@@ -7,26 +7,44 @@ import io
 from PIL import Image
 from PIL import ImageFilter
 import sys
+import argparse
 
 diff = 25
 
-first_screen_res = [1920, 1080]
-second_screen_res = [1360, 768]
+
+def string_to_resolution_list(resolution_str):
+    width = int(resolution_str[:resolution_str.index('x')])
+    heihgt = int(resolution_str[resolution_str.index('x')+1:])
+    res_list = [width, heihgt]
+    return res_list
+
 
 if __name__ == '__main__':
     width = 64
     height = 64
+
+    parser = argparse.ArgumentParser(description="yeelight color bulb cinema mode script")
+
+    parser.add_argument("--screen", "-s", default='left')
+    parser.add_argument("--resolution_l", "-rl", default='1920x1080')
+    parser.add_argument("--resolution_r", "-rr", default='1360x768')
+    parser.add_argument("--bulb_ip", "-bip", default='192.168.1.247')
+
+    args = parser.parse_args()
+
+    first_screen_res = string_to_resolution_list(args.resolution_l)
+    second_screen_res = string_to_resolution_list(args.resolution_r)
+
     key_color = None
 
-    bulb = Bulb("192.168.1.247", effect="smooth")
+    bulb = Bulb(args.bulb_ip, effect="smooth")
     bulb.start_music(2000)
     output = io.BytesIO()
     while True:
 
         im = ImageGrab.grab()
-        # TODO support custom resolutions for primary and second screen
         if len(sys.argv) > 1:
-            if sys.argv[1] == 'second':
+            if args.screen == 'right':
                 cropped = im.crop((first_screen_res[0],
                                    first_screen_res[1] - second_screen_res[1],
                                    first_screen_res[0] + second_screen_res[0],
@@ -40,11 +58,10 @@ if __name__ == '__main__':
 
         blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
         output.flush()
-        output.seek(0,0)
+        output.seek(0, 0)
         blurred_image.save(output, format='PNG')
         try:
             color_thief = ColorThief(output)
-            # get the dominant color
             dominant_color = color_thief.get_color(quality=10)
         except Exception:
             print "exception"
