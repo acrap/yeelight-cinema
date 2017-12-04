@@ -6,13 +6,13 @@ Script detects color of scene and changes bulb color.
 Enable direction by local network in Yeelight application (Android/iOs)
 Run script without arguments and it will calculates dominant color on screen and changes bulb color.
 
-usage:
-yeelight-cinema.py --bulb_ip=192.168.1.240 --resolution_l=1920x1080
+# Usage:
+    yeelight-cinema.py --bulb_ip=192.168.1.240 --resolution_l=1920x1080
 
 To use with secondary monitor (places right):
 
-                                           screen to use    left screen resolution      right screen resolution
-yeelight-cinema.py --bulb_ip=192.168.1.240 --screen=right --resolution_l=1920x1080 --resolution_r=1920x1080
+                                                screen to use    left screen resolution      right screen resolution
+    yeelight-cinema.py --bulb_ip=192.168.1.240 --screen=right --resolution_l=1920x1080 --resolution_r=1920x1080
 
 # Dependencies:
 Pillow, pyscreenshot, colorthief, yeelight
