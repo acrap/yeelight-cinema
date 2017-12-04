@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="yeelight color bulb cinema mode script")
 
-    parser.add_argument("--screen", "-s", default='left', type=str)
+    parser.add_argument("--target_screen", "-ts", default='left', type=str)
     parser.add_argument("--resolution_l", "-rl", default='1920x1080')
     parser.add_argument("--resolution_r", "-rr", default='1360x768')
     parser.add_argument("--bulb_ip", "-bip", default='192.168.1.247')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     bulb.start_music(2000)
     bbox = (0, 0, first_screen_res[0], first_screen_res[1])
 
-    if args.screen.startswith("right"):
+    if args.target_screen.startswith("right"):
         bbox = (first_screen_res[0],
                 first_screen_res[1] - second_screen_res[1],
                 first_screen_res[0] + second_screen_res[0],

@@ -16,7 +16,7 @@ Run script without arguments and it will calculates dominant color on screen and
 To use with secondary monitor (places right):
 
                                                 screen to use    left screen resolution      right screen resolution
-    yeelight-cinema.py --bulb_ip=192.168.1.240 --screen=right --resolution_l=1920x1080 --resolution_r=1920x1080
+    yeelight-cinema.py --bulb_ip=192.168.1.240 --target_screen=right --resolution_l=1920x1080 --resolution_r=1920x1080
 
 # Dependencies:
 Pillow, pyscreenshot, colorthief, yeelight
