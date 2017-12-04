@@ -44,19 +44,17 @@ if __name__ == '__main__':
     bulb.start_music(2000)
     while True:
 
-        im = image_grab.grab()
+        bbox = (0, 0, first_screen_res[0], first_screen_res[1])
         if len(sys.argv) > 1:
             if args.screen == 'right':
-                cropped = im.crop((first_screen_res[0],
-                                   first_screen_res[1] - second_screen_res[1],
-                                   first_screen_res[0] + second_screen_res[0],
-                                   first_screen_res[1]))
-            else:
-                cropped = im.crop((0, 0, first_screen_res[0], first_screen_res[1]))
-        else:
-            cropped = im.crop((0, 0, first_screen_res[0], first_screen_res[1]))
+                bbox = (first_screen_res[0],
+                        first_screen_res[1] - second_screen_res[1],
+                        first_screen_res[0] + second_screen_res[0],
+                        first_screen_res[1])
 
-        resized_img = cropped.resize((width, height), Image.BILINEAR)
+        im = image_grab.grab(bbox=bbox)
+
+        resized_img = im.resize((width, height), Image.BILINEAR)
         blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
         try:
             resize = 150
