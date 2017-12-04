@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="yeelight color bulb cinema mode script")
 
-    parser.add_argument("--screen", "-s", default='left')
+    parser.add_argument("--screen", "-s", default='left', type=str)
     parser.add_argument("--resolution_l", "-rl", default='1920x1080')
     parser.add_argument("--resolution_r", "-rr", default='1360x768')
     parser.add_argument("--bulb_ip", "-bip", default='192.168.1.247')
@@ -41,19 +41,20 @@ if __name__ == '__main__':
     key_color = None
 
     bulb = Bulb(args.bulb_ip, effect="smooth")
-    bulb.start_music(2000)
+    try:
+        bulb.start_music(2000)
+    except:
+        pass
+
+    bbox = (0, 0, first_screen_res[0], first_screen_res[1])
+
+    if args.screen.startswith("right"):
+        bbox = (first_screen_res[0],
+                first_screen_res[1] - second_screen_res[1],
+                first_screen_res[0] + second_screen_res[0],
+                first_screen_res[1])
     while True:
-
-        bbox = (0, 0, first_screen_res[0], first_screen_res[1])
-        if len(sys.argv) > 1:
-            if args.screen == 'right':
-                bbox = (first_screen_res[0],
-                        first_screen_res[1] - second_screen_res[1],
-                        first_screen_res[0] + second_screen_res[0],
-                        first_screen_res[1])
-
         im = image_grab.grab(bbox=bbox)
-
         resized_img = im.resize((width, height), Image.BILINEAR)
         blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
         try:
