@@ -3,7 +3,7 @@ from os.path import join, dirname
 
 setup(
     name='yeelight-cinema',
-    version='0.11',
+    version='0.12',
     packages=find_packages(),
     long_description="This script can be used with yeelight color bulb. "
                      "Script detects color of scene and changes bulb color",
