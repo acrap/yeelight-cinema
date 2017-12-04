@@ -13,7 +13,6 @@ setup(
     install_requires=[
         'pillow',
         'pyscreenshot',
-        'colorthief',
         'yeelight',
     ]
 )

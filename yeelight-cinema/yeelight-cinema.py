@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import pyscreenshot as image_grab
-from colorthief import ColorThief
 from yeelight import Bulb
 import io
 from PIL import Image
@@ -43,7 +42,6 @@ if __name__ == '__main__':
 
     bulb = Bulb(args.bulb_ip, effect="smooth")
     bulb.start_music(2000)
-    output = io.BytesIO()
     while True:
 
         im = image_grab.grab()
@@ -59,14 +57,13 @@ if __name__ == '__main__':
             cropped = im.crop((0, 0, first_screen_res[0], first_screen_res[1]))
 
         resized_img = cropped.resize((width, height), Image.BILINEAR)
-
         blurred_image = resized_img.filter(ImageFilter.GaussianBlur(radius=5))
-        output.flush()
-        output.seek(0, 0)
-        blurred_image.save(output, format='PNG')
         try:
-            color_thief = ColorThief(output)
-            dominant_color = color_thief.get_color(quality=10)
+            resize = 150
+            result = blurred_image.convert('P', palette=Image.ADAPTIVE, colors=1)
+            result.putalpha(0)
+            colors = result.getcolors(resize * resize)
+            dominant_color = colors[0][1][:3]
         except Exception:
             print "exception"
 
