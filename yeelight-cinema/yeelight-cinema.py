@@ -9,8 +9,6 @@ from PIL import ImageFilter
 import sys
 import argparse
 
-diff = 25
-
 
 def string_to_resolution_list(resolution_str):
     width = int(resolution_str[:resolution_str.index('x')])
@@ -29,8 +27,10 @@ if __name__ == '__main__':
     parser.add_argument("--resolution_l", "-rl", default='1920x1080')
     parser.add_argument("--resolution_r", "-rr", default='1360x768')
     parser.add_argument("--bulb_ip", "-bip", default='192.168.1.247')
+    parser.add_argument("--color_diff", "-cdiff", default='25')
 
     args = parser.parse_args()
+    diff = int(args.color_diff)
 
     first_screen_res = string_to_resolution_list(args.resolution_l)
     second_screen_res = string_to_resolution_list(args.resolution_r)
