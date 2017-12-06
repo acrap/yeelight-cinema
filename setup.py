@@ -3,7 +3,7 @@ import os
 
 setup(
     name='yeelight-cinema',
-    version='0.15',
+    version='0.16',
     packages=find_packages(),
     long_description="This script can be used with yeelight color bulb. "
                      "Script detects color of scene and changes bulb color",
