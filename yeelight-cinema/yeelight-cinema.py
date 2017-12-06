@@ -7,19 +7,26 @@ from PIL import Image
 import sys
 import argparse
 from Queue import Queue
-import atexit
+
+exit_signal_received = False
 
 
-def bulb_setter_thread(bulb, queue):
-    while True:
-        if isinstance(queue, Queue):
-            color = queue.get()
-            if isinstance(color, list):
-                if isinstance(bulb, Bulb):
-                    try:
-                        bulb.set_rgb(color[0], color[1], color[2])
-                    except:
-                        pass
+def bulb_setter_thread(bulb_param, queue):
+    try:
+        while not exit_signal_received:
+            if isinstance(queue, Queue):
+                try:
+                    color = queue.get(timeout=5)
+                except:
+                    continue
+                if isinstance(color, list):
+                    if isinstance(bulb_param, Bulb):
+                        try:
+                            bulb_param.set_rgb(color[0], color[1], color[2])
+                        except:
+                            pass
+    except KeyboardInterrupt:
+        pass
 
 def string_to_resolution_list(resolution_str):
     try:
@@ -32,10 +39,14 @@ def string_to_resolution_list(resolution_str):
     return res_list
 
 
-def terminate_handler(bulb):
+def terminate_handler(bulb_param):
+    global exit_signal_received
     if isinstance(bulb, Bulb):
-        bulb.stop_music()
-    sys.exit(0)
+        try:
+            bulb_param.stop_music()
+        except:
+            pass
+    exit_signal_received = True
 
 
 if __name__ == '__main__':
@@ -74,30 +85,28 @@ if __name__ == '__main__':
     t = threading.Thread(name="bulb_color_change_thread", target=bulb_setter_thread, args=(bulb, queue,))
     t.start()
 
-    # register terminate handler
-    atexit.register(terminate_handler, bulb)
-
-    while True:
-        im = image_grab.grab(bbox=bbox)
-        resized_img = im.resize((width, height), Image.BILINEAR)
-
+    while not exit_signal_received:
         try:
+            im = image_grab.grab(bbox=bbox)
+            resized_img = im.resize((width, height), Image.BILINEAR)
             resize = 150
             result = resized_img.convert('P', palette=Image.ADAPTIVE, colors=1)
             result.putalpha(0)
             colors = result.getcolors(resize * resize)
             dominant_color = colors[0][1][:3]
-        except Exception:
-            print "exception"
-
-        if key_color is None:
-            key_color = dominant_color
-        else:
-            if abs(dominant_color[0] - key_color[0]) < diff\
-                and abs(dominant_color[1] - key_color[1]) < diff \
-                    and abs(dominant_color[2] - key_color[2]) < diff:
-                continue
-            else:
+            if key_color is None:
                 key_color = dominant_color
+            else:
+                if abs(dominant_color[0] - key_color[0]) < diff\
+                    and abs(dominant_color[1] - key_color[1]) < diff \
+                        and abs(dominant_color[2] - key_color[2]) < diff:
+                    continue
+                else:
+                    key_color = dominant_color
 
             queue.put([dominant_color[0], dominant_color[1], dominant_color[2]])
+
+        except KeyboardInterrupt:
+            terminate_handler(bulb)
+        except Exception:
+            print "exception"
