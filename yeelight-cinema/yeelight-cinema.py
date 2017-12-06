@@ -1,10 +1,20 @@
 #!/usr/bin/python
 
 import pyscreenshot as image_grab
+import threading
 from yeelight import Bulb
 from PIL import Image
 import sys
 import argparse
+from Queue import Queue
+
+
+def bulb_setter_thread(bulb, queue):
+    while True:
+        if isinstance(queue, Queue):
+            color = queue.get()
+            if isinstance(bulb, Bulb):
+                bulb.set_rgb(color[0], color[1], color[2])
 
 
 def string_to_resolution_list(resolution_str):
@@ -21,6 +31,8 @@ def string_to_resolution_list(resolution_str):
 if __name__ == '__main__':
     width = 32*16
     height = 32*9
+
+    queue = Queue(maxsize=1)
 
     parser = argparse.ArgumentParser(description="yeelight color bulb cinema mode script")
 
@@ -47,6 +59,10 @@ if __name__ == '__main__':
                 first_screen_res[1] - second_screen_res[1],
                 first_screen_res[0] + second_screen_res[0],
                 first_screen_res[1])
+
+    t = threading.Thread(name="bulb_color_change_thread", target=bulb_setter_thread, args=(bulb, queue,))
+    t.start()
+
     while True:
         im = image_grab.grab(bbox=bbox)
         resized_img = im.resize((width, height), Image.BILINEAR)
@@ -70,7 +86,7 @@ if __name__ == '__main__':
             else:
                 key_color = dominant_color
         try:
-            bulb.set_rgb(dominant_color[0], dominant_color[1], dominant_color[2])
+            queue.put([dominant_color[0], dominant_color[1], dominant_color[2]])
         except:
             pass
 
