@@ -7,6 +7,7 @@ from PIL import Image
 import sys
 import argparse
 from Queue import Queue
+import atexit
 
 
 def bulb_setter_thread(bulb, queue):
@@ -31,6 +32,12 @@ def string_to_resolution_list(resolution_str):
     return res_list
 
 
+def terminate_handler(bulb):
+    if isinstance(bulb, Bulb):
+        bulb.stop_music()
+    sys.exit(0)
+
+
 if __name__ == '__main__':
     width = 32*16
     height = 32*9
@@ -44,6 +51,7 @@ if __name__ == '__main__':
     parser.add_argument("--resolution_r", "-rr", default='1360x768')
     parser.add_argument("--bulb_ip", "-bip", default='192.168.1.247')
     parser.add_argument("--color_diff", "-cdiff", default='25')
+    parser.add_argument("--bulb_effect", "-bef", default='smooth')
 
     args = parser.parse_args()
     diff = int(args.color_diff)
@@ -53,7 +61,7 @@ if __name__ == '__main__':
 
     key_color = None
 
-    bulb = Bulb(args.bulb_ip, effect="smooth")
+    bulb = Bulb(args.bulb_ip, effect=args.bulb_effect)
     bulb.start_music(2000)
     bbox = (0, 0, first_screen_res[0], first_screen_res[1])
 
@@ -65,6 +73,9 @@ if __name__ == '__main__':
 
     t = threading.Thread(name="bulb_color_change_thread", target=bulb_setter_thread, args=(bulb, queue,))
     t.start()
+
+    # register terminate handler
+    atexit.register(terminate_handler, bulb)
 
     while True:
         im = image_grab.grab(bbox=bbox)
