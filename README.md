@@ -19,7 +19,7 @@ To use with secondary monitor (places right):
     yeelight-cinema.py --bulb_ip=192.168.1.240 --target_screen=right --resolution_l=1920x1080 --resolution_r=1920x1080
 
 # Dependencies:
-Pillow, pyscreenshot, colorthief, yeelight
+Pillow, pyscreenshot, yeelight
 
 # TODO:
 Script uses too much CPU. Need to decrease it.
