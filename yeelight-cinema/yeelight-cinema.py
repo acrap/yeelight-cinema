@@ -13,9 +13,12 @@ def bulb_setter_thread(bulb, queue):
     while True:
         if isinstance(queue, Queue):
             color = queue.get()
-            if isinstance(bulb, Bulb):
-                bulb.set_rgb(color[0], color[1], color[2])
-
+            if isinstance(color, list):
+                if isinstance(bulb, Bulb):
+                    try:
+                        bulb.set_rgb(color[0], color[1], color[2])
+                    except:
+                        pass
 
 def string_to_resolution_list(resolution_str):
     try:
@@ -85,11 +88,5 @@ if __name__ == '__main__':
                 continue
             else:
                 key_color = dominant_color
-        try:
+
             queue.put([dominant_color[0], dominant_color[1], dominant_color[2]])
-        except:
-            pass
-
-
-
-
