@@ -6,7 +6,7 @@ from yeelight import Bulb
 from PIL import Image
 import sys
 import argparse
-from Queue import Queue
+from queue import Queue
 
 exit_signal_received = False
 
@@ -33,7 +33,7 @@ def string_to_resolution_list(resolution_str):
         width = int(resolution_str[:resolution_str.index('x')])
         heihgt = int(resolution_str[resolution_str.index('x')+1:])
     except:
-        print "invalid resolution '{0}'. Use WIDTHxHEIGHT format (for example 1920x1080)".format(resolution_str)
+        print("invalid resolution '{0}'. Use WIDTHxHEIGHT format (for example 1920x1080)".format(resolution_str))
         sys.exit(-1)
     res_list = [width, heihgt]
     return res_list
@@ -91,9 +91,8 @@ if __name__ == '__main__':
             resized_img = im.resize((width, height), Image.BILINEAR)
             resize = 150
             result = resized_img.convert('P', palette=Image.ADAPTIVE, colors=1)
-            result.putalpha(0)
-            colors = result.getcolors(resize * resize)
-            dominant_color = colors[0][1][:3]
+            colors = result.getpalette()
+            dominant_color = colors[0:3]
             if key_color is None:
                 key_color = dominant_color
             else:
@@ -108,5 +107,5 @@ if __name__ == '__main__':
 
         except KeyboardInterrupt:
             terminate_handler(bulb)
-        except Exception:
-            print "exception"
+        except Exception as e:
+            print("Exception: ", e)
